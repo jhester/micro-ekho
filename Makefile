@@ -11,12 +11,19 @@ OBJ = cc1101.o
 %.o : %.cpp
 	$(CC) -c $(CXXFLAGS) $(LFLAGS) $< -o $@
 
-all: $(OBJ)
-	$(CC) $(CXXFLAGS) $(LFLAGS) $< main.cpp -o main.elf
+rx: $(OBJ)
+	$(CC) $(CXXFLAGS) $(LFLAGS) $< rx.cpp -o rx.elf
 
-install:all
-	mspdebug rf2500 "prog main.elf"
+tx: $(OBJ)
+	$(CC) $(CXXFLAGS) $(LFLAGS) $< tx.cpp -o tx.elf
 
+all: rx tx
+
+installrx: rx
+	mspdebug rf2500 "prog rx.elf"
+
+installtx: tx
+	mspdebug rf2500 "prog tx.elf"
 
 clean: 
 	rm -f *.elf *.asm *.o

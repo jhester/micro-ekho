@@ -27,18 +27,7 @@ void smart_load() {
 int main(void){
 	//Stop watchdog timer
 	WDTCTL = WDTPW + WDTHOLD;
-
-    // Configure ADC
-    P1SEL1 |= BIT0 + BIT1; 
-    P1SEL0 |= BIT0 + BIT1; 
-
-    // CS pin for amplifier
-    PJDIR |= BIT0;
-    PJOUT |= BIT0;
-
-    P1DIR |=  BIT2 + BIT3 + BIT4 + BIT5;
-    P1OUT &= ~(BIT2 + BIT3 + BIT4 + BIT5);
-
+	
 	// Create a packet of data
 	tx_buffer[0] = 12;
 	tx_buffer[1] = 23;
