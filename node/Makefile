@@ -1,21 +1,22 @@
 SUPPORT_FILE_DIRECTORY = /opt/ti-mspgcc/include
 
+NAME = main
 DEVICE  = msp430fr5728
 CC      = msp430-elf-g++
 
-CXXFLAGS = -I $(SUPPORT_FILE_DIRECTORY)  -mmcu=$(DEVICE) -g -O0 -mhwmult=f5series
+CXXFLAGS = -I $(SUPPORT_FILE_DIRECTORY) -mmcu=$(DEVICE) -g -O0 -mhwmult=f5series
 LFLAGS = -L $(SUPPORT_FILE_DIRECTORY)
 
 OBJ = cc1101.o
 
-%.o : %.cpp
+cc1101.o : cc1101.cpp
 	$(CC) -c $(CXXFLAGS) $(LFLAGS) $< -o $@
 
-all: $(OBJ)
-	$(CC) $(CXXFLAGS) $(LFLAGS) $< main.cpp -o main.elf
+all: cc1101.o
+	$(CC) -DDEVICE_ID=1 $(CXXFLAGS) $(LFLAGS) $< $(NAME).cpp -o $(NAME).elf
 
-install:all
-	mspdebug rf2500 "prog main.elf"
+install: all
+	mspdebug rf2500 "prog $(NAME).elf"
 
 
 clean: 

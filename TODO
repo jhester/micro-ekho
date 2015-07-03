@@ -1,0 +1,12 @@
+TODO
+√ 1 - Create five pretend arrays to send data over BT from Teensy to test that connection and app display
+2 - Make sure data connection between teensy and phone is perfect (with ID's always showing up etc)
+2 - App needs to remove any graphs that have no data in past one second (run every second a search maybe)
+3 - Change android app to support this many graphs, show node ID number on top
+4 - Android app, add aggregate / total expected energy information graph, in a different color, assume 1µA current
+5 - Send screensoht to TIM of app on handheld
+5 - Change code on msp430 to sample constantly and only send max values over a time period, add in a circular buffer
+6 - Add sync mode for msp430's to sync with basestation the first time they send, each msp430 needs to recieve for a bit after
+7 - add sync time sharing to basestation
+8 - add low power modes to msp430
+9 - If no basestation response for a long time, then go into sleep mode, poll every minute

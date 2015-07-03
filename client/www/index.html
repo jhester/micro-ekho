@@ -2,77 +2,46 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+ <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *"> -->
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-  
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self'">
   <link rel="stylesheet" type="text/css" href="css/jquery.mobile.flatui.css" />
   <link rel="stylesheet" type="text/css" href="css/index.css" />
   <script src="js/jquery.js"></script>
   <script src="js/jquery.mobile-1.4.0-rc.1.js"></script>
-  <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+  <script language="javascript" type="text/javascript" src="js/smoothie.js"></script>
+  <script language="javascript" type="text/javascript" src="js/underscore-min.js"></script>
+  
   </head>
 <body>
+  <div data-role="page" id="btconnect">
+     <div data-role="header">
+      <!--<a data-iconpos="notext" data-role="button" data-icon="home" title="Home">Home</a>-->
+      <h1>Connect</h1>
+      <!--<a data-iconpos="notext" href="#panel" data-role="button" data-icon="flat-menu"></a>-->
+    </div>
+
+    <!-- Connection page -->
+    <div data-role="content" role="main">
+      <ul data-role="listview" id="scanneddevices">
+        
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main data view page -->
   <div data-role="page" id="mainpage">
-
-    <div data-role="panel" id="panel" data-position="right" data-theme="a" data-display="push"></div>
-
     <div data-role="header">
-      <a data-iconpos="notext" data-role="button" data-icon="home" title="Home">Home</a>
       <h1>Micro Ekho</h1>
-      <a data-iconpos="notext" href="#panel" data-role="button" data-icon="flat-menu"></a>
     </div>
 
     <div data-role="content" role="main">
-        <fieldset class="ui-grid-a ui-responsive">
-            <div class="ui-block-a ui-corner-all custom-corners">
-                 <div class="ui-bar ui-bar-a">
-                    
-                    <label for="select-native-2">Micro Ekho 1:</label>
-                        <select name="select-native-2" id="select-native-2" data-mini="true">
-                            <option value="1">Voltage</option>
-                            <option value="2">Current</option>
-                            <option value="3">IV Curve</option>
-                            <option value="4">IV Surface</option>
-                        </select>
-                    
-                    
-                </div>
-                <div class="ui-body ui-body-a">
-                    <div id="placeholder" class="graph2d"></div>
-                </div>
-            </div>
-            
-            <div class="ui-block-b ui-corner-all custom-corners">
-                 <div class="ui-bar ui-bar-b">
-                    <h3>Heading</h3>
-                </div>
-                <div class="ui-body ui-body-b">
-                    <p>Content</p>
-                </div>
-            </div>
-
-            <div class="ui-block-a ui-corner-all custom-corners">
-                 <div class="ui-bar ui-bar-a">
-                    <h3>Heading</h3>
-                </div>
-                <div class="ui-body ui-body-a">
-                    <p>Content</p>
-                </div>
-            </div>
-            
-            <div class="ui-block-b ui-corner-all custom-corners">
-                 <div class="ui-bar ui-bar-b">
-                    <h3>Heading</h3>
-                </div>
-                <div class="ui-body ui-body-b">
-                    <p>Content</p>
-                </div>
-            </div>
-       </fieldset>
+        <div class="ui-grid-b ui-responsive" id="graph_grids">
+          <!-- Graphs will be here -->
+       </div>
     </div>
-
   </div>
 
   <div id="highlight"> </div>

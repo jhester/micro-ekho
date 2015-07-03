@@ -2,7 +2,7 @@
 #define CC1101_h
 
 #include <stdint.h>
-#include <msp430fr5739.h>
+#include <msp430fr5728.h>
 #include "macros.h"
 #include "registers.h"
 
