@@ -6,10 +6,11 @@
 #define MAX_NODES 6
 
 uint8_t tx_buffer[61]={0};
+uint8_t rx_buffer[61]={0};
 uint16_t v_samples[10]={0};
 uint16_t i_samples[5]={0};
 volatile uint8_t burstnum,i,flag;
-
+uint16_t sleep_time;
 void init_vlo() {
 	CSCTL0_H = 0xA5;
 	CSCTL1 = DCOFSEL_3; // Set to 8MHz DCO clock
@@ -90,34 +91,51 @@ int main(void){
 	// Setup timer
 	init_vlo();
 
+	// Sleep
+	sleep_time = 100;
+
 	// By default, REFMSTR=1 => REFCTL is used to configure the internal reference
 	while(REFCTL0 & REFGENBUSY);              // If ref generator busy, WAIT                                          
 	REFCTL0 |= REFVSEL_0+REFON;               // Select internal ref = 1.5V, Internal Reference ON   
 	__delay_cycles(1000);                      // ref delay  
 
 	Radio.Init();	
-	Radio.SetDataRate(4); // Needs to be the same in Tx and Rx
-	Radio.SetLogicalChannel(0); // Needs to be the same in Tx and Rx	
+	Radio.SetDataRate(5); // Needs to be the same in Tx and Rx
+	Radio.SetLogicalChannel(1); // Needs to be the same in Tx and Rx	
 	Radio.SetTxPower(0);
 	//Radio.Sleep();
 
 	// Sync bytes for the device ID, first four bytes in a BT notification must be the same, and under 10
-	tx_buffer[0] = 0;
-	tx_buffer[1] = 0;
-	tx_buffer[2] = 0;
+	tx_buffer[0] = DEVICE_ID;
+	tx_buffer[1] = DEVICE_ID;
+	tx_buffer[2] = DEVICE_ID;
 	tx_buffer[3] = DEVICE_ID;
 	while(1) {	
+		//Radio.Idle();
 		// Gather samples
 		//smart_load();
-		for(uint8_t i=0;i<8;i++) {
-			v_samples[i] = sample_voltage();
+		//for(uint8_t i=0;i<8;i++) {
+			//v_samples[i] = sample_voltage();
 			//__delay_cycles(SAMPLE_DELAY);
-		}
-		memcpy(&tx_buffer[4], v_samples, 16);
+		//}
+		//memcpy(&tx_buffer[4], v_samples, 16);
+		
 		// Send Samples
-		Radio.SendData(tx_buffer,20);
+		Radio.SendData(tx_buffer,61);
+		__delay_cycles(1000);
+	/*	Radio.RxOn();
+		while(!Radio.CheckReceiveFlag());
+		Radio.ReceiveData(rx_buffer);	
+		__delay_cycles(1000000);
+		//Radio.SendData(tx_buffer,20);
+		/*		if(rx_buffer[0] == DEVICE_ID && rx_buffer[1] == DEVICE_ID) {
+					sleep_time = (rx_buffer[2] << 8) + rx_buffer[3];
+					break;
+				}
+			}
+		}*/
 		//Radio.Sleep();
-		// MCU sleep timer
+
 
 	}
 	return 1;

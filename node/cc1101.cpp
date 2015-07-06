@@ -6,7 +6,11 @@
 #define 	READ_BURST      	0xC0						//read burst
 #define 	BYTES_IN_RXFIFO     0x7F  						//uint8_t number in RXfifo
 
-
+/**
+ * Type of register
+ */
+#define CC1101_CONFIG_REGISTER   READ_SINGLE
+#define CC1101_STATUS_REGISTER   READ_BURST
 
 /****************************************************************/
 
@@ -109,6 +113,8 @@ uint8_t CC1101Radio::SpiTransfer(uint8_t value)
 
 	/* read the readio status uint8_t returned by the command strobe */
 	statusByte = SPI_READ_BYTE();
+	//debug_stats[debug_index] = statusByte;
+	//debug_index++;
 	return statusByte;
 }
 
@@ -156,6 +162,7 @@ void CC1101Radio::Init(void)
 	Reset();										//CC1101 reset
 	RegConfigSettings();							//CC1101 register config
 	SpiWriteBurstReg(CC1101_PATABLE,PaTabel,8);		//CC1101 PATABLE config
+	mrfiRadioState = RADIO_STATE_IDLE;
 }
 
 
@@ -223,6 +230,27 @@ uint8_t CC1101Radio::SpiReadReg(uint8_t addr)
 	uint8_t temp, value;
 
     temp = addr|READ_SINGLE;
+	SPI_DRIVE_CSN_LOW();
+	while (SPI_SO_IS_HIGH());
+	SpiTransfer(temp);
+	value=SpiTransfer(0);
+	SPI_DRIVE_CSN_HIGH();
+
+	return value;
+}
+
+
+/****************************************************************
+*FUNCTION NAME:SpiReadStatusReg
+*FUNCTION     :CC1101 read data from status register
+*INPUT        :addr: register address
+*OUTPUT       :register value
+****************************************************************/
+uint8_t CC1101Radio::SpiReadStatusReg(uint8_t addr) 
+{
+	uint8_t temp, value;
+
+    temp = addr|READ_BURST;
 	SPI_DRIVE_CSN_LOW();
 	while (SPI_SO_IS_HIGH());
 	SpiTransfer(temp);
@@ -382,13 +410,15 @@ uint8_t CC1101Radio::ReceiveData(uint8_t *rxBuffer)
 		SpiReadBurstReg(CC1101_RXFIFO,rxBuffer,size);
 		SpiReadBurstReg(CC1101_RXFIFO,status,2);
 		SpiStrobe(CC1101_SFRX);
-		RxOn();
+		//RxOn(); // ???? I this bad????
+		mrfiRadioState = RADIO_STATE_IDLE;
 		return size;
 	}
 	else
 	{
 		SpiStrobe(CC1101_SFRX);
-		RxOn();
+		//RxOn(); // ???? I this bad????
+		mrfiRadioState = RADIO_STATE_IDLE;
 		return 0;
 	}
 }
@@ -431,10 +461,10 @@ void CC1101Radio::RxModeOff() {
 // Idle mode probably should be avoided, as 1mA draw
 // Only voltage regulator to digital part and crystal oscillator running 
 void CC1101Radio::Idle() {
-	if(mrfiRadioState == RADIO_STATE_RX) {
+	//if(mrfiRadioState == RADIO_STATE_RX) {
 		RxModeOff();
 		mrfiRadioState = RADIO_STATE_IDLE;
-	}
+	//}
 }
 
 // Voltage regulator to digital part off, register values retained (SLEEP state). 
@@ -478,6 +508,12 @@ void CC1101Radio::Wakeup() {
 
 uint8_t CC1101Radio::GetState() {
 	return	mrfiRadioState;
+}
+
+uint8_t CC1101Radio::GetMARCState() {
+	//return	SpiReadReg(CC1101_MARCSTATE);
+	//return SpiStrobe(0xF5);
+	return SpiReadStatusReg(CC1101_MARCSTATE) & 0x1F;
 }
 
 void CC1101Radio::SetLogicalChannel(uint8_t channel) {

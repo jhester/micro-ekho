@@ -19,6 +19,10 @@
 // Eample: INFIX( ANOTHER, _, TOKEN ) ==> ANOTHER_TOKEN
 #define INFIX( a, i, b ) CONCATENATE( CONCATENATE( a, i ), b )
 
+// Alternate size INFIXs
+#define INFIX4( a, b, c, d) CONCATENATE( INFIX( a, b, c), d)
+#define INFIX5( a, b, c, d, e) INFIX (INFIX( a, b, c), d, e)
+
 // Easier to put lines of code in a macro
 #define st(x)      do { x } while (__LINE__ == -1)
 
@@ -28,4 +32,4 @@
 // Software delay (clock cycles)
 #define delay(x) st(for(uint16_t __indx=0;__indx<(uint16_t)x*1000;__indx++);)
 
-#endif  
+#endif

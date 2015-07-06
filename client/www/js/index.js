@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-var num_graphs = 0;
+var MAX_NODES = 6;
+var num_graphs = 1;// Already have the totals graph
 var graphs = [];
 
 var redbear = {
@@ -47,15 +47,28 @@ function myYRangeFunction(range) {
   return {min: min, max: max};
 }
 
+var time_last_checked = new Date().getTime();
+var graph_totals_g, graph_totals_s;
+function create_totals() {
+    graph_totals_g = new SmoothieChart({
+        interpolation:'linear',
+        minValue : 0.0,
+        grid:{verticalSections:5},
+        yRangeFunction:myYRangeFunction
+    });
+    graph_totals_g.streamTo(document.getElementById("graph_totals"), 1000);
+    graph_totals_s = new TimeSeries();
+    graph_totals_g.addTimeSeries(graph_totals_s, {lineWidth:2,strokeStyle:'#ff0000'});
+}
 
 function create_plot_container(id, title) {
     col = String.fromCharCode('a'.charCodeAt() + num_graphs % 3); 
-    var htmladd = '<div class="ui-block-'+col+' ui-corner-all custom-corners">'+
+    var htmladd = '<div class="ui-block-'+col+' ui-corner-all custom-corners" id="container_'+id+'">'+
                     '<div class="ui-bar ui-bar-a">'+title+
                 '</div>'+
                 '<div class="ui-body ui-body-a">'+
                     '<canvas id="'+id+'" width="280" height="100"></canvas>'+
-                '</div>';
+                '</div></div>';
     $('#graph_grids').append(htmladd);
     var smoothie = new SmoothieChart({
         interpolation:'linear',
@@ -73,14 +86,39 @@ function handle_server_data(ekho_data) {
     // If graphs not created then create them
     var thegraph = _.findWhere(graphs, {id : 'graph'+ekho_data.id})
     if(!thegraph) {
-        thegraph = create_plot_container('graph'+ekho_data.id, 'Voltage');
+        console.log('Created graph'+ekho_data.id);
+        thegraph = create_plot_container('graph'+ekho_data.id, "#"+ekho_data.id+' Voltage');
         graphs.push(thegraph);    
 
     }
     // Add data to the graph now
+    var timestamp = new Date().getTime();
     var max_voltage = _.max(ekho_data.data);
-    console.log("ID="+ekho_data.id + ", v="+ekho_data.data);
-    thegraph.series.append(new Date().getTime(), (max_voltage / 1024.0 * 1.5) * 2);
+    thegraph.series.append(timestamp, (max_voltage / 1024.0 * 1.5) * 2);
+
+    if(timestamp - time_last_checked > 1000) {
+        var sum_power = 0;
+        for (var i = graphs.length - 1; i >= 0; i--) {
+
+        }
+        //graph_totals_s.append(timestamp, (max_voltage / 1024.0 * 1.5) * 2);
+        /*var remove_ndxs = [];
+        for (var i = graphs.length - 1; i >= 0; i--) {
+            if(graphs[i].series.data.length == 0 || timestamp - _.last(graphs[i].series.data)[0] > 1000) {
+                remove_ndxs.push(i);
+            }
+        }; 
+
+        // Remove tagged graphs
+        for (var i = remove_ndxs.length - 1; i >= 0; i--) {
+            console.log(remove_ndxs);
+            console.log(graphs);
+            console.log("Removed: "+$("#container_"+graphs[remove_ndxs[i]].id).remove());
+            graphs.splice(remove_ndxs[i], 1);
+            console.log("Removed graph");
+        };*/
+        time_last_checked = timestamp;
+    }
 }
 
 
@@ -129,7 +167,9 @@ var app = {
             console.log(device_id);
             app.connect(device_id);
         });
-        
+
+        create_totals();
+
         ble.enable(
             function() {
                 console.log("Bluetooth is enabled");
@@ -144,6 +184,7 @@ var app = {
     failure : function(errorcode) {
         $.mobile.loading("hide");
         console.log("ERROR: "+JSON.stringify(errorcode));
+        alert("ERROR: "+JSON.stringify(errorcode));
     },
 
     onDeviceList : function(devicefound) {
@@ -168,7 +209,7 @@ var app = {
 
     onData : function(incoming_data) {
         var data = new Uint8Array(incoming_data);
-        if(data.length == 20) {
+        if(data.length == 20 && data[0] > 0 && data[0] < MAX_NODES+1) {
             for (var i = 1; i < 4; i++) {
                 if(data[i] != data[0]) return;
             };
