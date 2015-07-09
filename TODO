@@ -1,12 +1,64 @@
 TODO
 √ 1 - Create five pretend arrays to send data over BT from Teensy to test that connection and app display
-2 - Make sure data connection between teensy and phone is perfect (with ID's always showing up etc)
-2 - App needs to remove any graphs that have no data in past one second (run every second a search maybe)
-3 - Change android app to support this many graphs, show node ID number on top
-4 - Android app, add aggregate / total expected energy information graph, in a different color, assume 1µA current
-5 - Send screensoht to TIM of app on handheld
-5 - Change code on msp430 to sample constantly and only send max values over a time period, add in a circular buffer
-6 - Add sync mode for msp430's to sync with basestation the first time they send, each msp430 needs to recieve for a bit after
-7 - add sync time sharing to basestation
-8 - add low power modes to msp430
-9 - If no basestation response for a long time, then go into sleep mode, poll every minute
+√ 2 - Make sure data connection between teensy and phone is perfect (with ID's always showing up etc)
+√ 2 - App needs to remove any graphs that have no data in past one second (run every second a search maybe)
+√ 3 - Change android app to support this many graphs, show node ID number on top
+√ 4 - Android app, add aggregate / total expected energy information graph, in a different color, assume 1µA current
+√ 5 - Send screensoht to TIM of app on handheld
+√ 5 - Change code on msp430 to sample constantly and only send max values over a time period, add in a circular buffer
+√ 6 - Add sync mode for msp430's to sync with basestation the first time they send, each msp430 needs to recieve for a bit after
+√ 7 - add sync time sharing to basestation
+
+Node + Basestation
+- fix data transfer protocol
+- Send more data points quicker
+- make lag shorter for data transfer
+- add low power modes to msp430
+
+Assembly
+- Replace all RST resistors with 47k
+- Build four devices
+- Test them all
+- Glue 4-5 enclosures in the morning with magnets
+- Once tested and all working, solder on battery connectors
+- Put batteries in the connectors and test
+
+App General
+√ - Allow mock BLE connection (debug mode)
+√ - Allow mock data to be used in-app (debug mode)
+
+App: Page: Connect
+√ - Add instructions for connecting to the Bluetooth module
+√ - Add refresh button for BLE connection to rescan
+√ - Show row with no devices found
+
+App: Page: Main
+- Add disconnect button
+√ - Make graphs span entire width of screen. Two per window on Nexus 7.
+√ - Add maximize / minimize button on graph bar
+√ - Show max power since arbitrary start in header bar, calculate once a second
+√ - Show total energy since arbitrary start, calculate once a second
+√ - Show options window when clicking title on graph (show figure settings)
+- Maximize / full screen a single graph
+
+App: Popup: options
+√ - Allow change title of graph in optoins
+√ - Set average harvestable current
+√ - Allow reset of statistics
+
+Finishing Up Questions:
+- Name of the app == Powerfelt
+- App icons / artwork and splash screens (if can provide vector image or high resolution logo I can do this myself)
+
+
+
+Max voltage per person, total power using estimated current
+Settings bar, show assumed current 
+
+Change names, select graph UI box
+Maximize minimize buttons on UI bar or graph
+Estimated current, settable in UI box
+Check box, actual voltage or absolute value (software rectification)
+
+5150 Nexus 7 Tim
+
