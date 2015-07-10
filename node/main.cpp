@@ -3,12 +3,13 @@
 #include <string.h>
 #define SAMPLE_DELAY 10
 #define DELAY_BETWEEN 1000
-#define MAX_NODES 6
-#define SAMPLES 30
+#define SAMPLES 10
 #define SAMPLE_SIZE 2
 #define RX_BUFFER_SIZE (SAMPLE_SIZE * SAMPLES + 1) 
 #define SEND_DELAY_TICKS 1000
-#define LOOP_TIMES (10000 / SEND_DELAY_TICKS)
+#define MAX_NODES 4
+#define TOTAL_NETWORK_TIME (MAX_NODES * SEND_DELAY_TICKS)
+#define LOOP_TIMES (SAMPLES) // Number of items in array
 uint8_t tx_buffer[61]={0};
 uint8_t rx_buffer[RX_BUFFER_SIZE]={0};
 uint16_t v_samples[SAMPLES]={0};
@@ -20,28 +21,13 @@ void init_vlo() {
 	CSCTL0_H = 0xA5;
 	CSCTL1 = DCOFSEL_3; // Set to 8MHz DCO clock
 	CSCTL2 = SELA_1 + SELS_3 + SELM_3;        // set ACLK = XT1; MCLK = DCO
-	CSCTL3 = DIVA_0 + DIVS_3 + DIVM_3;        // set all dividers, Div by 8 for 1MHz clock speed
-}
-
-void start_timer(uint16_t time_ms) {
-	TA0CCTL0 = 0;
-	TA0CTL = TACLR; // Clear any settings from last time
-	TA0CTL |= MC_1 + TASSEL_1 + TAIE; // Up mode, clock source is ACLK (VLO), turn on interrupts
-	TA0CCR0 = time_ms * 10;
-}
-
-void stop_timer() {
-	TA0CTL = 0;
-}
-
-uint8_t timer_expired() {
-	return !(TA0CTL & TAIFG);
+	CSCTL3 = DIVA_0 + DIVS_0 + DIVM_0;        // set all dividers, Div by 1 for 8MHz clock speed
 }
 
 uint16_t sample_voltage() {
-	ADC10CTL0 &= ~ADC10ENC;
-	ADC10MCTL0 = ADC10INCH_1 + ADC10SREF_1;
-	ADC10CTL0 |= ADC10ENC + ADC10SC;
+	//ADC10CTL0 &= ~ADC10ENC;
+	//ADC10MCTL0 = ADC10INCH_1 + ADC10SREF_1;
+	ADC10CTL0 |= ADC10SC;
 	while(ADC10CTL1 & ADC10BUSY);
 	uint16_t retval = ADC10MEM0;
 	if(retval < MAX_NODES) retval = MAX_NODES+1; // The low values are reserved, since they are noise anyway on the ADC
@@ -98,16 +84,20 @@ int main(void){
 	WDTCTL = WDTPW + WDTHOLD;
 
 	// FET pins for smart laod
-	P1DIR |=  BIT2 + BIT3 + BIT4 + BIT5;
-    P1OUT &= ~(BIT2 + BIT3 + BIT4 + BIT5);
-    P1DIR &= ~BIT2;
+	//P1DIR |=  BIT2 + BIT3 + BIT4 + BIT5;
+    //P1OUT &= ~(BIT2 + BIT3 + BIT4 + BIT5);
+    P1DIR &= ~(BIT2 + BIT3 + BIT4 + BIT5);
+    //P1DIR &= ~(BIT0 + BIT1);
 
 	// Configure ADC
-	P1SEL0 |= BIT0 + BIT1;
-	P1SEL1 |= BIT0 + BIT1;
+	P1SEL0 |= BIT1;
+	P1SEL1 |= BIT1;
+	ADC10CTL0 &= ~ADC10ENC;
 	ADC10CTL0 |= ADC10ON + ADC10SHT_0;
 	ADC10CTL1 |= ADC10DIV_0 + ADC10SHP;
-	ADC10CTL2 |= ADC10RES; // 10-bit results
+	ADC10CTL2 |= ADC10RES + ADC10PDIV_0; // 10-bit results
+	ADC10MCTL0 = ADC10INCH_1 + ADC10SREF_1;
+	ADC10CTL0 |= ADC10ENC;
 
 	// Setup timer
 	init_vlo();
@@ -118,9 +108,9 @@ int main(void){
 	__delay_cycles(1000);                      // ref delay  
 
 	Radio.Init();	
-	Radio.SetDataRate(5); // Needs to be the same in Tx and Rx
+	Radio.SetDataRate(3); // Needs to be the same in Tx and Rx
 	Radio.SetLogicalChannel(DEVICE_ID); // Needs to be the same in Tx and Rx	
-	Radio.SetTxPower(3);
+	Radio.SetTxPower(0);
 	Radio.Sleep();
 	//tx_buffer[0] = DEVICE_ID; Dont need this since using channel hopping
 
@@ -153,10 +143,11 @@ int main(void){
 		// Prepare samples, manage loop
 		v_samples[loop_index] = max;
 		max = 0;
+		
 		// Set loop index
 		tx_buffer[0] = loop_index;
 		loop_index++;
-		if(loop_index > LOOP_TIMES) {
+		if(loop_index >= LOOP_TIMES) {
 			loop_index = 0;
 		}
 		
@@ -164,12 +155,10 @@ int main(void){
 		
 		// Turn on radio
 		Radio.Wakeup();
-		__delay_cycles(100);
+		//__delay_cycles(100);
 		Radio.SendData(tx_buffer, RX_BUFFER_SIZE);
-		__delay_cycles(100);
+		//__delay_cycles(100);
 		Radio.Sleep();
-
-
 	}
 	return 1;
 }

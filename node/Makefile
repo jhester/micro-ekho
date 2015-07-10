@@ -12,7 +12,7 @@ cc1101.o : cc1101.cpp
 	$(CC) -c $(CXXFLAGS) $(LFLAGS) $< -o $@
 
 all: $(OBJ)
-	$(CC) $(CXXFLAGS) -DDEVICE_ID=1 $(LFLAGS) $< main.cpp -o main.elf
+	$(CC) $(CXXFLAGS) -DDEVICE_ID=3 $(LFLAGS) $< main.cpp -o main.elf
 
 install: all
 	mspdebug rf2500 "prog main.elf"

@@ -16,11 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var DEBUG = true;
-var MAX_NODES = 6;
+var DEBUG = false;
+var ADC_RESOLUTION = 1024;
+var ADC_REF_VOLTAGE = 3.0;
+var MAX_NODES = 4;
 var num_graphs = 0;// Already have the totals graph
 var graphs = [];
-
+var scanning = false;
 var redbear = {
     serviceUUID:        "713D0000-503E-4C75-BA94-3148F18D941E",
     txCharacteristic:   "713D0003-503E-4C75-BA94-3148F18D941E", // transmit is from the phone's perspective
@@ -91,10 +93,11 @@ function create_plot_container(id, title) {
     var smoothie = new SmoothieChart({
         interpolation:'linear',
         minValue : 0.0,
+        //millisPerPixel:7,
         grid:{verticalSections:5},
         yRangeFunction:myYRangeFunction
     });
-    smoothie.streamTo(document.getElementById(id), 100);
+    smoothie.streamTo(document.getElementById(id), 150);
     var line1 = new TimeSeries();
     smoothie.addTimeSeries(line1, {lineWidth:2,strokeStyle:'#00ff00'});
      
@@ -103,7 +106,7 @@ function create_plot_container(id, title) {
     stats.total_energy[id] = 0;
     
     num_graphs++;
-    return {id : id, graph : smoothie, series : line1, title : title};
+    return {id : id, graph : smoothie, series : line1, title : title, last_data : []};
 }
 
 function handle_server_data(ekho_data) {
@@ -117,12 +120,36 @@ function handle_server_data(ekho_data) {
 
     }
     // Add data to the graph now
-    var timestamp = new Date().getTime() + 1000;
+    var timestamp = new Date().getTime();
     var max_voltage = _.max(ekho_data.data);
-    thegraph.series.append(timestamp, (max_voltage / 1024.0 * 1.5) * 2);
-    //for (var i = ekho_data.data.length - 1; i >= 0; i--) {
-    //    thegraph.series.append(ekho_data.data[i], new Date().getTime() - (i * 100));
-    //};
+    //thegraph.series.append(timestamp, ekho_data.data[ekho_data.data.length-1]);
+    
+    // Get place in new data (compare to old data)
+    // If the oldest data point in the new data is the same as the newest point in old data
+    // Then skip this step, 
+    var next = ekho_data.data;
+    var start = thegraph.last_data;
+    var old_data_length = start.length;
+    var index_to_read_data = 0;
+    if(next[0] != start[old_data_length-1]) {
+        for (var i = next.length - 1; i >= 0; i--) {
+            if(Math.abs(start[old_data_length-1] - next[i]) < 0.0001) {
+                index_to_read_data=i+1; 
+                break;
+            }
+        };
+    }
+    var printstring = "";
+    for (var i = index_to_read_data, j=0; i < next.length ; i++, j++) {
+        if(next[i] > 3.3) {
+            console.log("Crap");
+            continue;
+        }
+        thegraph.series.append(timestamp + j * 50, next[i]);
+        printstring +=next[i]+","
+    };
+    console.log(printstring);
+    thegraph.last_data = next;
 
     // Update stats
     if(stats.estimated_current[graph_id_actual] * max_voltage > stats.max_power[graph_id_actual]) {
@@ -159,30 +186,6 @@ function handle_server_data(ekho_data) {
         };*/
         time_last_checked = timestamp;
     }
-}
-
-
-function handle_mock_server_data(data) {
-    var ekho_data = JSON.parse(data).data;
-    // Get most recent data for all graphs
-    var all_node_ids = _.uniq(_.pluck(ekho_data, 'id'));
-
-    _.each(all_node_ids, function(id) {
-        var datafornode = _.where(ekho_data, {id : id});
-        // If graphs not created then create them
-        var thegraph = _.findWhere(graphs, {id : 'graph'+id})
-        if(!thegraph) {
-            thegraph = create_plot_container('graph'+id, 'Voltage');
-            graphs.push(thegraph);    
-        }
-        // Add data to the graph now
-        var max_voltage = 0;
-        for (var i = datafornode.length - 1; i >= 0; i--) {
-            if(_.max(datafornode[i].data) > max_voltage) max_voltage = _.max(datafornode[i].data);
-        };
-        thegraph.series.append(new Date().getTime(), (max_voltage / 1024.0 * 1.5) * 2);
-
-    });
 }
 
 var app = {
@@ -264,7 +267,7 @@ var app = {
         // Update stats
         setInterval(function(e) {
             _.each(graphs, function(item) {
-                $('#max_power_'+item.id).text(stats.max_power[item.id].toFixed(2)+"mW");
+                $('#max_power_'+item.id).text(Math.round(stats.max_power[item.id]*1000)+"µW");
                 $('#total_energy_'+item.id).text(stats.total_energy[item.id].toFixed(2)+"mJ");
             });
             
@@ -273,36 +276,43 @@ var app = {
     },
 
     scan : function() {
-        if(DEBUG) return;
+        if(DEBUG == true) return;
         // Reset device
         var deviceList = $('#scanneddevices');
         deviceList.empty();
         deviceList.append('<li><b>Choose a device to connect to.</b><br/>Using Bluetooth Low Energy.</li>');
         deviceList.listview("refresh");
+        if(scanning == false)
         if(cordova.platformId === 'android') {
             ble.enable(
                 function() {
                     console.log("Bluetooth is enabled");
                     ble.scan([], 5, app.onDeviceList, app.failure);
+                    scanning = true;
 
                 },
                 function() {
                     console.log("The user did *not* enable Bluetooth");
+
                 }
             );
         } else {
             // iOS
             ble.scan([redbear.serviceUUID], 5, app.onDeviceList, app.failure);
+            scanning = true;
+
         }
     },
 
     failure : function(errorcode) {
+        scanning = false;
         $.mobile.loading("hide");
         console.log("ERROR: "+JSON.stringify(errorcode));
         alert("ERROR: "+JSON.stringify(errorcode));
     },
 
     onDeviceList : function(devicefound) {
+        scanning = false;
         console.log(devicefound);
         var deviceList = $('#scanneddevices');
         deviceList.append('<li deviceid="'+devicefound.id+'"><a href="'+devicefound.id+'"><b>' + devicefound.name + '</b><br/>' + devicefound.id + '</a></li>');
@@ -323,16 +333,21 @@ var app = {
 
     onData : function(incoming_data) {
         var data = new Uint8Array(incoming_data);
-        if(data.length == 20 && data[0] > 0 && data[0] < MAX_NODES+1) {
-            for (var i = 1; i < 4; i++) {
-                if(data[i] != data[0]) return;
-            };
+        if(data.length == 20 && data[0] < MAX_NODES) {
             var converted_data = { data : []};
 
             converted_data.id = data[0];
-            for(var i=4;i<data.length;i+=2){
-                converted_data.data.push((data[i+1] << 8) | data[i]);
+            for(var i=2;i<data.length;i+=2){
+                var digital_voltage = (data[i+1] << 8) | data[i];
+                if(digital_voltage > ADC_RESOLUTION) {
+                    console.log("BAD DATA");
+                    return; // Out of bounds / bad data error
+                }
+                converted_data.data.push(digital_voltage / ADC_RESOLUTION * ADC_REF_VOLTAGE);
             }
+            
+            var begin_of_array = converted_data.data.splice(data[1]+1, data.length);
+            converted_data.data = begin_of_array.concat(converted_data.data);
             handle_server_data(converted_data);
         }
     }
@@ -347,12 +362,17 @@ if(DEBUG) {
         button.button();
         var id_for_device = 0;
         setInterval(function(e) {
-            
-            var ekho_data = {
-                id : id_for_device +1,
-                data : [Math.floor(Math.random() * 1024),2,3,4,5,6]
+            // Loop index
+            var ekho_mock_data = [id_for_device +1, 4];
+
+            for (var i = 0; i < 9; i++) {
+                var num = Math.floor(Math.random() * 1024);
+                ekho_mock_data.push(num & 0xff);
+                ekho_mock_data.push( (num >> 8 ) & 0xff);
             };
-            handle_server_data(ekho_data);
+            
+            app.onData(new Uint8Array(ekho_mock_data));
+            
             id_for_device = (id_for_device+1) % (MAX_NODES - 1);
         }, 100);
     });

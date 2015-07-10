@@ -6,7 +6,7 @@
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <!--<meta http-equiv="Content-Security-Policy" content="style-src 'unsafe-eval' 'self'"> -->
+        <meta http-equiv="Content-Security-Policy" content="style-src 'unsafe-eval' 'self'">
   <link rel="stylesheet" type="text/css" href="jquery.mobile-1.4.5.css" />
   <link rel="stylesheet" type="text/css" href="css/index.css" />
   <script src="js/jquery.js"></script>
@@ -51,10 +51,14 @@
 
        <!-- Data graph popup -->
       <div data-role="popup" id="popupLogin" data-theme="a" class="ui-corner-all" data-history="false">
-              <div style="padding:10px 20px;">
+              <div class="popup_inner_style">
                   <h3>Figure Settings</h3>
                   <input type="text" name="title" id="settings_title" value="" placeholder="Figure title" data-theme="a">
                   <input type="text" name="cur" id="settings_current" value="" placeholder="Estimated Current (mA)" data-theme="a">
+                  <select name="select-choice-1" id="select-choice-1">
+                    <option value="standard">Measure Voltage</option>
+                    <option value="rush">Measure Current</option>
+                </select>
                   <button id="reset_stats" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-btn-icon-left ui-icon-recycle">
                     Reset Statistics
                   </button>

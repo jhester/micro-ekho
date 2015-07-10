@@ -29,3 +29,7 @@ canvas {
     float:right;
     
 }
+
+.popup_inner_style {
+  padding:10px 20px;
+}
