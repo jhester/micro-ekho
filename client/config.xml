@@ -19,8 +19,11 @@
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
+    <preference name="Orientation" value="landscape" />
+    <preference name="Fullscreen" value="true" />
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
+        <preference name="DisallowOverscroll" value="true" />
     </platform>
 </widget>

@@ -10,22 +10,23 @@ TODO
 √ 7 - add sync time sharing to basestation
 
 Node + Basestation
-- fix data transfer protocol
-- Send more data points quicker
-- make lag shorter for data transfer
+√ - fix data transfer protocol
+√ - Send more data points quicker
+√ - make lag shorter for data transfer
 - add low power modes to msp430
 
 Assembly
-- Replace all RST resistors with 47k
-- Build four devices
-- Test them all
-- Glue 4-5 enclosures in the morning with magnets
-- Once tested and all working, solder on battery connectors
-- Put batteries in the connectors and test
+√ - Replace all RST resistors with 47k
+√ - Build four devices
+√ - Test them all
+√ - Glue 4-5 enclosures in the morning with magnets
+√ - Once tested and all working, solder on battery connectors
+√ - Put batteries in the connectors and test
 
 App General
 √ - Allow mock BLE connection (debug mode)
 √ - Allow mock data to be used in-app (debug mode)
+ - When error encountered in "failure" funciton, go back to connect
 
 App: Page: Connect
 √ - Add instructions for connecting to the Bluetooth module
@@ -39,7 +40,10 @@ App: Page: Main
 √ - Show max power since arbitrary start in header bar, calculate once a second
 √ - Show total energy since arbitrary start, calculate once a second
 √ - Show options window when clicking title on graph (show figure settings)
+- Render all new data incoming (need to check for last added data by comparing)
+- Get estimated timestamps right so not replacing data (ACtually, replacement should be fine)
 - Maximize / full screen a single graph
+- Make units scale automatically from miili and micro on header
 
 App: Popup: options
 √ - Allow change title of graph in optoins
@@ -47,9 +51,8 @@ App: Popup: options
 √ - Allow reset of statistics
 
 Finishing Up Questions:
-- Name of the app == Powerfelt
-- App icons / artwork and splash screens (if can provide vector image or high resolution logo I can do this myself)
-
+√ - Name of the app == Powerfelt
+√ - App icons / artwork and splash screens (if can provide vector image or high resolution logo I can do this myself)
 
 
 Max voltage per person, total power using estimated current
@@ -62,3 +65,5 @@ Check box, actual voltage or absolute value (software rectification)
 
 5150 Nexus 7 Tim
 
+- Remember names for the ids in SQL db
+- 

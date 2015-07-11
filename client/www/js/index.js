@@ -34,15 +34,18 @@ var current_graph_settings_id = null;
 
 // Holds three lookupt tables. Lookup key is id of graph 
 var stats = {
-    estimated_current : {}, // in milli-amperes
+    estimated_current : {}, // in milli-amperes,
+    average  : {},
     max_power : {}, // milli-watts
     total_energy : {}, // milli-joules
     last_timestamp : {},
     reset : function(id) {
        this.max_power[id] = 0;
        this.total_energy[id] = 0;
+       this.average[id] = 0;
         $('#max_power_'+id).text("0mW");
         $('#total_energy_'+id).text("0mJ");
+        $('#average_'+id).text("0V");
     }
 };
 
@@ -67,7 +70,7 @@ function bytesToString(buffer) {
 function myYRangeFunction(range) {
   // TODO implement your calculation using range.min and range.max
   var min = 0;
-  var max = range.max + 0.25;
+  var max = range.max;
   return {min: min, max: max};
 }
 
@@ -76,7 +79,7 @@ var time_last_checked = new Date().getTime();
 function create_plot_container(id, title) {
     col = String.fromCharCode('a'.charCodeAt() + num_graphs % 3); 
     var htmladd = $('<div data-role="collapsible" data-mini="true" id="container_'+id+'" data-iconpos="right">' +
-        '<h4><span id="title_'+id+'">'+title+'</span>, <span id="max_power_'+id+'">0mW</span>, <span id="total_energy_'+id+'">0mJ</span></h4>'+
+        '<h4><span id="title_'+id+'">'+title+'</span>, <span id="max_power_'+id+'">0mW</span>, <span id="total_energy_'+id+'">0mJ</span>, <span id="average_'+id+'">0V</span></h4>'+
         '<canvas id="'+id+'" width="'+($(window).width()-80)+'" height="120"></canvas>'+
         '<a id="btn_'+id+'" __graph_id="'+id+'" href="#popupLogin" data-rel="popup" data-position-to="window"  data-transition="pop" class="ui-btn ui-corner-all ui-icon-gear ui-btn-icon-left ui-mini" data-transition="pop">Figure Settings</a>' +
         '</div>');
@@ -104,6 +107,7 @@ function create_plot_container(id, title) {
     stats.estimated_current[id] = 0.001;
     stats.max_power[id] = 0;
     stats.total_energy[id] = 0;
+    stats.average[id] = 0;
     
     num_graphs++;
     return {id : id, graph : smoothie, series : line1, title : title, last_data : []};
@@ -158,7 +162,8 @@ function handle_server_data(ekho_data) {
     // Energy = power (I * V) * time    
     stats.total_energy[graph_id_actual] += stats.estimated_current[graph_id_actual] * max_voltage * 0.1;
     // stats.last_timestamp[graph_id_actual]
-    
+    stats.average[graph_id_actual] = max_voltage;
+    $('#average_'+graph_id_actual).text(max_voltage.toFixed(3)+"V");
     if(timestamp - time_last_checked > 1000) {
         var sum_power = 0;
         for (var i = graphs.length - 1; i >= 0; i--) {
@@ -282,25 +287,31 @@ var app = {
         deviceList.empty();
         deviceList.append('<li><b>Choose a device to connect to.</b><br/>Using Bluetooth Low Energy.</li>');
         deviceList.listview("refresh");
-        if(scanning == false)
-        if(cordova.platformId === 'android') {
-            ble.enable(
-                function() {
-                    console.log("Bluetooth is enabled");
-                    ble.scan([], 5, app.onDeviceList, app.failure);
-                    scanning = true;
+        if(scanning == false) {
+            if(cordova.platformId === 'android') {
+                ble.enable(
+                    function() {
+                        console.log("Bluetooth is enabled");
+                        ble.scan([], 5, app.onDeviceList, app.failure);
+                        scanning = true;
+                    },
+                    function() {
+                        console.log("The user did *not* enable Bluetooth");
 
-                },
-                function() {
-                    console.log("The user did *not* enable Bluetooth");
+                    }
+                );
+            } else {
+                // iOS
+                $.mobile.loading("show");
+                ble.startScan([], app.onDeviceList, app.failure);
 
-                }
-            );
-        } else {
-            // iOS
-            ble.scan([redbear.serviceUUID], 5, app.onDeviceList, app.failure);
-            scanning = true;
-
+                setTimeout(ble.stopScan,
+                    5000,
+                    function() { $.mobile.loading("hide");console.log("Scan complete");scanning = false; },
+                    function() { $.mobile.loading("hide");console.log("stopScan failed");scanning = false; }
+                );
+                scanning = true;
+            }
         }
     },
 
