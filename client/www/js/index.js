@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var DEBUG = false;
+var DEBUG = true;
 var ADC_RESOLUTION = 1024;
 var ADC_REF_VOLTAGE = 3.0;
 var MAX_NODES = 4;
@@ -324,10 +324,17 @@ var app = {
 
     onDeviceList : function(devicefound) {
         scanning = false;
-        console.log(devicefound);
-        var deviceList = $('#scanneddevices');
-        deviceList.append('<li deviceid="'+devicefound.id+'"><a href="'+devicefound.id+'"><b>' + devicefound.name + '</b><br/>' + devicefound.id + '</a></li>');
-        deviceList.listview("refresh");
+        console.log("Found: "+devicefound);
+        if(cordova.platformId === 'android') {
+            var deviceList = $('#scanneddevices');
+            deviceList.append('<li deviceid="'+devicefound.id+'"><a href="'+devicefound.id+'"><b>' + devicefound.name + '</b><br/>' + devicefound.id + '</a></li>');
+            deviceList.listview("refresh");
+        } else {
+            var deviceList = $('#scanneddevices');
+            deviceList.append('<li deviceid="'+devicefound.uuid+'"><a href="'+devicefound.uuid+'"><b>' + devicefound.name + '</b><br/>' + devicefound.uuid + '</a></li>');
+            deviceList.listview("refresh");
+        }
+        
     },
 
     connect: function(device_id) {
