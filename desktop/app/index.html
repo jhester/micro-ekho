@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Ekho</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" href="css/photon.min.css">
+
+    <!-- Javascript -->
+    <script>window.$ = window.jQuery = require('./js/jquery.js');</script>
+    <script src="js/jquery.flot.js"></script>
+    <script src="js/jquery.flot.axislabels.js"></script>
+    <script src="js/underscore-min.js"></script>
+    <script src="js/index.js"></script>
+
+  </head>
+  <body>
+
+      <div class="window">
+        <!-- Header -->
+        <header class="toolbar toolbar-header">
+          <div class="toolbar-actions">
+            <button id="start_stop_recording" class="btn btn-disabled" disabled="true">
+              <span class="icon icon-record icon-text" style="color: #009900"></span>
+              Start Recording
+            </button>
+
+            <button class="btn btn-default btn-dropdown pull-right">
+              <span class="icon icon-megaphone"></span>
+            </button>
+            <span id="timer">00:00:00</span>
+          </div>
+        </header>
+
+        <!-- App's content goes inside .window-content -->
+        <div id="container" class="window-content">
+          <div class="pane">
+                <div id="plot_container">
+
+                </div>
+          </div>
+        </div>
+      </div>
+
+  </body>
+</html>
