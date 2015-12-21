@@ -7,6 +7,7 @@
 #include "registers.h"
 #include "pins.h"
 
+
 /* Helper functions */
 #define SPI_TURN_CHIP_SELECT_ON()        SPI_DRIVE_CSN_LOW()
 #define SPI_TURN_CHIP_SELECT_OFF()       SPI_DRIVE_CSN_HIGH()
@@ -28,29 +29,27 @@ class CC1101Radio {
 		void SpiWriteBurstReg(uint8_t addr, uint8_t *buffer, uint8_t num);
 		uint8_t SpiStrobe(uint8_t strobe);
 		uint8_t SpiReadReg(uint8_t addr);
-		uint8_t SpiReadStatusReg(uint8_t addr);
 		void SpiReadBurstReg(uint8_t addr, uint8_t *buffer, uint8_t num);
 		uint8_t SpiReadStatus(uint8_t addr);
 		void RegConfigSettings(void);
 		void RxModeOff(void);
+		uint8_t SpiReadStatusReg(uint8_t addr);
 	public:
-		/** Debug info */
-		volatile uint8_t debug_index = 0;
-		uint8_t debug_stats[256] = {0};
 		void Init(void);
 		void RxOn(void);
 		void Idle(void);		
 		void Sleep(void);
 		void Wakeup(void);
-		void SendData(uint8_t *txBuffer, uint8_t size);		
+		void SendData(uint8_t *txBuffer, uint8_t size);
+		void SendDataNoWait(uint8_t *txBuffer, uint8_t size);		
 		void SetDataRate(uint8_t rate_ndx);
 		void SetTxPower(uint8_t powrset_ndx);
 		void SetLogicalChannel(uint8_t channel);
 		void SetMaxPacketLength(uint8_t pkt_length);
+		uint8_t GetMARCState();
 		uint8_t CheckReceiveFlag(void);
 		uint8_t ReceiveData(uint8_t *rxBuffer);
 		uint8_t GetState(void);
-		uint8_t GetMARCState(void);
 		int8_t Rssi(void);
 };
 

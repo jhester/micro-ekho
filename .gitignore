@@ -1,3 +1,7 @@
 client/platforms/android
 client/hooks
 client/plugins
+client/platforms
+mobile/hooks
+mobile/platforms
+mobile/plugins

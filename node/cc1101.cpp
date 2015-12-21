@@ -139,9 +139,9 @@ void CC1101Radio::GDO_Set (void)
 void CC1101Radio::Reset (void)
 {
 	SPI_DRIVE_CSN_LOW();
-	delay(1);
+	//__delay_cycles(1000);
 	SPI_DRIVE_CSN_HIGH();
-	delay(4);
+	//__delay_cycles(1000);
 	SPI_DRIVE_CSN_LOW();
 	while (SPI_SO_IS_HIGH());
 	SpiTransfer(CC1101_SRES);
@@ -358,6 +358,21 @@ void CC1101Radio::SendData(uint8_t *txBuffer,uint8_t size)
 	SpiStrobe(CC1101_STX);									//start send	
 	while (!GDO0_PIN_IS_HIGH());
 	while (GDO0_PIN_IS_HIGH());	
+	SpiStrobe(CC1101_SFTX);									//flush TXfifo
+}
+
+/****************************************************************
+*FUNCTION NAME:SendDataNoWait
+*FUNCTION     :use CC1101 send data but don't wait for the GDO0 pins
+*INPUT        :txBuffer: data array to send; size: number of data to send, no more than packet length
+*OUTPUT       :none
+****************************************************************/
+void CC1101Radio::SendDataNoWait(uint8_t *txBuffer,uint8_t size)
+{
+	SpiWriteReg(CC1101_TXFIFO,size); // Send size first in variable length mode (always be in var length mode)
+	SpiWriteBurstReg(CC1101_TXFIFO,txBuffer,size);			//write data to send
+	SpiStrobe(CC1101_STX);									//start send	
+	__delay_cycles(1000);
 	SpiStrobe(CC1101_SFTX);									//flush TXfifo
 }
 

@@ -5,9 +5,9 @@
  *                                      GDO0 Pin Configuration
  * ------------------------------------------------------------------------------------------------
  */
-#define GDO0_BIT__                     5
+#define GDO0_BIT__                     4
 #define GDO0_PORT__                    J
-#define CONFIG_GDO0_PIN_AS_INPUT()       st( INFIX( P, GDO0_PORT__, SEL0 ) &= ~BV(GDO0_BIT__); ) /* clear pin special function default */
+#define CONFIG_GDO0_PIN_AS_INPUT()       st( INFIX( P, GDO0_PORT__, SEL0 ) &= ~BV(GDO0_BIT__); INFIX( P, GDO0_PORT__, DIR ) &= ~BV(GDO0_BIT__); ) /* clear pin special function default */
 #define GDO0_PIN_IS_HIGH()               ( INFIX( P, GDO0_PORT__, IN ) & BV(GDO0_BIT__))
 
 
@@ -27,7 +27,7 @@
  */
 #define GDO2_BIT__                     1
 #define GDO2_PORT__                    2
-#define CONFIG_GDO2_PIN_AS_INPUT()       st( INFIX( P, GDO2_PORT__, SEL0 ) &= ~BV(GDO2_BIT__); ) /* clear pin special function default */
+#define CONFIG_GDO2_PIN_AS_INPUT()       st( INFIX( P, GDO2_PORT__, SEL0 ) &= ~BV(GDO2_BIT__); INFIX( P, GDO2_PORT__, DIR ) &= ~BV(GDO2_BIT__);) /* clear pin special function default */
 #define GDO2_PIN_IS_HIGH()               ( INFIX( P, GDO2_PORT__, IN ) & BV(GDO2_BIT__))
 
 #define GDO2_INT_VECTOR                  INFIX( PORT, GDO2_PORT__, _VECTOR )
@@ -46,7 +46,7 @@
  */
 
 /* CSn Pin Configuration */
-#define SPI_CSN_GPIO_BIT__             4
+#define SPI_CSN_GPIO_BIT__             5
 #define SPI_CONFIG_CSN_PIN_AS_OUTPUT()   st( PJDIR |=  BV(SPI_CSN_GPIO_BIT__); )
 #define SPI_DRIVE_CSN_HIGH()             st( PJOUT |=  BV(SPI_CSN_GPIO_BIT__); ) /* atomic operation */
 #define SPI_DRIVE_CSN_LOW()              st( PJOUT &= ~BV(SPI_CSN_GPIO_BIT__); ) /* atomic operation */
@@ -72,7 +72,9 @@
 /* SPI Port Configuration */
 #define SPI_CONFIG_PORT()                st( P1SEL1 |= BV(SPI_SI_GPIO_BIT__)   |  \
                                                            BV(SPI_SO_GPIO_BIT__); \
-                                                  P2SEL1 |= BV(SPI_SCLK_GPIO_BIT__); )
+                                              P1SEL0 &= ~(BV(SPI_SI_GPIO_BIT__) | BV(SPI_SO_GPIO_BIT__)); \
+                                                  P2SEL1 |= BV(SPI_SCLK_GPIO_BIT__); \
+                                                  P2SEL0 &= ~BV(SPI_SCLK_GPIO_BIT__); )
 
 #define SPI_INIT() \
 st ( \
