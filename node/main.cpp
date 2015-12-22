@@ -126,6 +126,22 @@ void smart_load() {
     __delay_cycles(DELAY_BETWEEN);
 }
 
+void voltage_load() {
+	P1OUT |= BIT5;
+    __delay_cycles(SAMPLE_DELAY);
+    v_samples[3] = sample_voltage();
+    i_samples[3] = sample_current();
+    __delay_cycles(DELAY_BETWEEN);
+}
+
+void current_load() {
+	P1OUT &= ~(BIT2 + BIT3 + BIT4 + BIT5);
+    __delay_cycles(SAMPLE_DELAY);
+    v_samples[0] = sample_voltage();
+    i_samples[0] = sample_current();
+    __delay_cycles(DELAY_BETWEEN);
+    
+}
 int main(void){
 	uint16_t max = 0, j=0;
 	uint16_t temp = 0;
@@ -136,8 +152,8 @@ int main(void){
 	// FET pins for smart load all low
 	smart_load_init();
 	// Set gain on INA225
-	set_gain_low();
-	//set_gain_high();
+	//set_gain_low();
+	set_gain_high();
 	// LED
 	led_init();
 	// Setup clocks
@@ -167,7 +183,7 @@ int main(void){
 	Radio.SetLogicalChannel(0); // Needs to be the same in Tx and Rx	
 	Radio.SetTxPower(0);
 	Radio.Sleep();
-
+	
 	// Main loop
 	while(1) {	
 		led_toggle();
@@ -175,7 +191,7 @@ int main(void){
 		// Get three IV curves to fill up packet
     	for(j=0;j<3;j++) {
     		smart_load();
-    		memcpy(&tx_buffer[1+BUF_SIZE_BYTES * 2 * j], v_samples, BUF_SIZE_BYTES); 
+			memcpy(&tx_buffer[1+BUF_SIZE_BYTES * 2 * j], v_samples, BUF_SIZE_BYTES); 
     		memcpy(&tx_buffer[1+BUF_SIZE_BYTES+BUF_SIZE_BYTES * 2 * j], i_samples, BUF_SIZE_BYTES); 
     	}
 

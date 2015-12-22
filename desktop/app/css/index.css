@@ -1,25 +1,70 @@
+textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {   
+    border-color: rgba(229, 103, 23, 0.8);
+    box-shadow: 0 0px 0px rgba(229, 103, 23, 0.075) inset, 0 0 0px rgba(229, 103, 23, 0.6);
+    outline: 0 none;
+}
+
 #plot_container {
 	width: 90%;
 	margin: auto;
 }
 
 .plottitle {
-	position: relative;
+	position: absolute;
 	left: 35px;
 	font-size: 19px;
 	font-weight: bold;
-	margin : 0;
-	width : 75%;
 	border: none;
 }
 
-.item-container {
-	float: left;	
-	margin-left: 20px;
-	margin-right: 20px;	
-}
-.item {
+.checks {
+	position: absolute;
+	right: 25px;
+	top: 0px;
+	text-align: center;
 	width: 300px;
+	font-family: "Source Sans Pro";
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.spacer {
+	margin-right: 5px;
+	margin-left: 5px;
+}
+
+.rotate90 {
+	-ms-transform: rotate(-90deg); /* IE 9 */
+    -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+    transform: rotate(-90deg);
+}
+
+.yaxislabel {
+	position: absolute;
+	left: -20px;
+	bottom: 50px;
+	font-size: 14px;
+	font-weight: bold;
+	font-family: "Source Sans Pro";
+}
+
+.xaxislabel {
+	position: absolute;
+	bottom: -30px;
+	right:315px;
+	font-size: 14px;
+	font-weight: bold;
+	font-family: "Source Sans Pro";
+}
+
+.item-container {
+	position: relative;
+	width: 100%;
+	height: 150px;
+}
+
+.item {
+	width: 680px;
 	height: 250px;
 	font-size: 14px;
 	font-weight: bold;
@@ -36,4 +81,10 @@
 	font-size: 19px;
 	text-align: center;
 	vertical-align: middle;
+}
+
+.streamer {
+	position: absolute;
+	top: 45px;
+	margin-left: 40px;
 }

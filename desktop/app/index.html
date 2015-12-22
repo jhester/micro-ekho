@@ -11,6 +11,7 @@
     <script>window.$ = window.jQuery = require('./js/jquery.js');</script>
     <script src="js/jquery.flot.js"></script>
     <script src="js/jquery.flot.axislabels.js"></script>
+    <script src="js/smoothie.js"></script>
     <script src="js/underscore-min.js"></script>
     <script src="js/index.js"></script>
 
@@ -26,8 +27,8 @@
               Start Recording
             </button>
 
-            <button class="btn btn-default btn-dropdown pull-right">
-              <span class="icon icon-megaphone"></span>
+            <button id="pause_play_stream" class="btn btn-disabled pull-right" disabled="true">
+              <span class="icon icon-pause"></span>
             </button>
             <span id="timer">00:00:00</span>
           </div>

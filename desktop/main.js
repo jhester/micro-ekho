@@ -1,4 +1,5 @@
 'use strict';
+const PRODUCTION = true;
 const electron = require('electron');
 var ipc = electron.ipcMain;
 const app = electron.app;  // Module to control application life.
@@ -7,10 +8,25 @@ var messenger = require('messenger');
 var fs = require('fs');
 var regression = require('regression');
 var _ = require('underscore');
+var child_process = require('child_process');
+
 
 var plotfilestreams = [];
 var is_recording = false;
 const ROWS_PER_PACKET = 15;
+
+/*
+var child_data_server = child_process.exec(['node data_stream.js'], function(error, stdout, stderr) {
+  if (error instanceof Error)
+    throw error
+  process.stderr.write(stderr);
+  process.stdout.write(stdout);
+  process.exit(code);
+});
+
+process.on('exit', function () {
+    child_data_server.kill();
+});*/
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -23,13 +39,14 @@ app.on('window-all-closed', function() {
   if (process.platform != 'darwin') {
     app.quit();
   }
+  //child_data_server.kill();
 });
 
 ipc.on('start-recording', function(event, data) {
   console.log('Start recording...');
   console.log(data);
   is_recording = true;
-  var row_header = 'DeviceID,';
+  var row_header = 'UNIXTime,DeviceID,';
   for (var i = 0; i < ROWS_PER_PACKET; i++) {
     row_header+="V"+i+",";
   };
@@ -69,7 +86,7 @@ app.on('ready', function() {
   mainWindow.loadURL('file://' + __dirname + '/app/index.html');
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if(!PRODUCTION) mainWindow.webContents.openDevTools();
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
     // Dereference the window object, usually you would store windows
@@ -84,13 +101,12 @@ app.on('ready', function() {
 var server = messenger.createListener(8000);
 server.on('raw_iv', function(message, data){
   // Regression
-  var result = regression('polynomial', _.zip(data.voltage, data.current), 3);
-  data.regression = result.equation;
-  mainWindow.webContents.send('raw_iv', data);
-  console.log(data);
+  //var result = regression('polynomial', _.zip(data.voltage, data.current), 3);
+  //data.regression = result.equation;
+  try {mainWindow.webContents.send('raw_iv', data);} catch(e) {/*child_data_server.kill();*/}
   // Write data if we are recording
   if(is_recording) {
-    var write_string = data.deviceid+","+data.voltage.join(",")+data.current.join(",")+"\n";
+    var write_string = (new Date()).getTime()+","+data.deviceid+","+data.voltage.join(",")+data.current.join(",")+"\n";
     plotfilestreams[data.deviceid].write(write_string);
   }
 });
