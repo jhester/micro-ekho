@@ -1,0 +1,13 @@
+TODO
+√ - Add pause / resume button
+√ - Select box with Current, Voltage, and Power
+√ - Get axis labels
+√ - Change rendered based on textbox
+√ - Give slider for different sizes (snap to 10s, 5s, 1s, 0.1s)
+- Add button to connect / start datastream using node executable.
+	Make Application out of serial node thing, or make clickable script for data_stream
+	Ekho for dummies 
+- Give Micro Ekho have pinless programmer
+- Figure out correct datarate, and communication between basestation, to coordinate a TDMA for micro ekhos
+- Make Application have a logo (Ekho)
+
