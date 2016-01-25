@@ -130,7 +130,6 @@
 <layer number="219" name="219bmp" color="20" fill="1" visible="no" active="no"/>
 <layer number="220" name="220bmp" color="21" fill="1" visible="no" active="no"/>
 <layer number="221" name="221bmp" color="22" fill="1" visible="no" active="no"/>
-<layer number="222" name="222bmp" color="23" fill="1" visible="no" active="no"/>
 <layer number="223" name="223bmp" color="24" fill="1" visible="no" active="no"/>
 <layer number="224" name="224bmp" color="25" fill="1" visible="no" active="no"/>
 <layer number="225" name="225bmp" color="7" fill="1" visible="no" active="yes"/>
@@ -1095,20 +1094,20 @@ Please make sure your boards conform to these design rules.</description>
 <element name="R3" library="SparkFun-Resistors" package="0805" value="1M" x="13.8" y="13.6" rot="R180"/>
 <element name="U4" library="SparkFun-DiscreteSemi" package="SC70-6" value="FDG6303N" x="12" y="17.2" smashed="yes" rot="R270"/>
 <element name="U5" library="SparkFun-DiscreteSemi" package="SC70-6" value="FDG6303N" x="6.1" y="21.2" smashed="yes" rot="R270"/>
-<element name="R4" library="SparkFun-Resistors" package="0805" value="" x="9.5" y="17.5" rot="R90">
+<element name="R4" library="SparkFun-Resistors" package="0805" value="200" x="9.5" y="17.5" rot="R90">
 <attribute name="PROD_ID" value="RES-09883" x="9.5" y="17.5" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="R6" library="SparkFun-Resistors" package="0805" value="" x="12" y="19.2" smashed="yes" rot="R180">
+<element name="R6" library="SparkFun-Resistors" package="0805" value="10k" x="12" y="19.2" smashed="yes" rot="R180">
 <attribute name="PROD_ID" value="RES-09883" x="12" y="19.2" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="14.562" y="19.2745" size="0.4064" layer="25" rot="R180"/>
 <attribute name="VALUE" x="13.016" y="20.597" size="0.4064" layer="27" rot="R180"/>
 </element>
-<element name="R7" library="SparkFun-Resistors" package="0805" value="" x="6.4" y="19.1" smashed="yes">
+<element name="R7" library="SparkFun-Resistors" package="0805" value="100k" x="6.4" y="19.1" smashed="yes">
 <attribute name="PROD_ID" value="RES-09883" x="6.4" y="19.1" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="4.338" y="18.8255" size="0.4064" layer="25"/>
 <attribute name="VALUE" x="5.384" y="17.703" size="0.4064" layer="27"/>
 </element>
-<element name="R8" library="SparkFun-Resistors" package="0805" value="" x="9.6" y="21" rot="R270">
+<element name="R8" library="SparkFun-Resistors" package="0805" value="1M" x="9.6" y="21" rot="R270">
 <attribute name="PROD_ID" value="RES-09883" x="9.6" y="21" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="U2" library="parts" package="HD_DIP4" value="CBRHDSH1-40L" x="13" y="30" rot="R270"/>

@@ -4316,10 +4316,10 @@ MSOP&lt;br&gt;
 <part name="U5" library="SparkFun-DiscreteSemi" deviceset="FDG6303N" device=""/>
 <part name="GND4" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="GND5" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
-<part name="R4" library="SparkFun-Resistors" deviceset="0.22OHM1/4W1%(0805)" device=""/>
-<part name="R6" library="SparkFun-Resistors" deviceset="0.22OHM1/4W1%(0805)" device=""/>
-<part name="R7" library="SparkFun-Resistors" deviceset="0.22OHM1/4W1%(0805)" device=""/>
-<part name="R8" library="SparkFun-Resistors" deviceset="0.22OHM1/4W1%(0805)" device=""/>
+<part name="R4" library="SparkFun-Resistors" deviceset="0.22OHM1/4W1%(0805)" device="" value="200"/>
+<part name="R6" library="SparkFun-Resistors" deviceset="0.22OHM1/4W1%(0805)" device="" value="10k"/>
+<part name="R7" library="SparkFun-Resistors" deviceset="0.22OHM1/4W1%(0805)" device="" value="100k"/>
+<part name="R8" library="SparkFun-Resistors" deviceset="0.22OHM1/4W1%(0805)" device="" value="1M"/>
 <part name="GND9" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="GND12" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 <part name="U2" library="parts" deviceset="CBRHDSH1-40L" device=""/>
