@@ -28,6 +28,9 @@ The "mobile" renders the aggregate data on a screen, in real time. Written with 
 
 The "node" folder holds all the code for the Micro Ekho nodes that are attached to energy harvesters. These nodes send IV data to the "basestation" over the radio. Embedded C on an MSP430.
 
+### Getting Started
+Currently, this project is very much in progress, please contact me for more information, or raise an Issue.
+
 #### License
 Except for the desktop application made with Electron, everything else is MIT.
 
