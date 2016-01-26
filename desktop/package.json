@@ -1,5 +1,5 @@
 {
-  "name": "electron-quick-start",
+  "name": "ekho-view",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
@@ -25,5 +25,13 @@
   "devDependencies": {
     "electron-prebuilt": "^0.36.0",
     "electron-rebuild": "^1.0.2"
+  },
+  "dependencies": {
+    "electron-prebuilt": "^0.36.1",
+    "messenger": "^0.0.9",
+    "regression": "^1.2.1",
+    "serialport": "^2.0.5",
+    "electron-rebuild": "^1.0.2",
+    "underscore": "^1.8.3"
   }
 }
